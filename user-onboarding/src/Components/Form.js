@@ -36,14 +36,46 @@ function Form () {
       const handleChange = event => {
         const { name, type, value, checked } = event.target;
         const updatedInfo = type === 'checkbox' ? checked : value;
+        setFormErrors(name, updatedInfo);
         setFormValues({ ...formValues, [name]: updatedInfo });
       }
 
       useEffect(() => {
-        formSchema.isValid(formValues).then(valid => {
+        formSchema.isValid(formValues)
+        .then(valid => {
           setDisabled(!valid);
         });
       }, [formValues]);
+
+     const setFormErrors = (name, value) => {
+      Yup
+      .reach(formSchema, name)
+      //we can then run validate using the value
+      .validate(value)
+      // if the validation is successful, we can clear the error message
+      .then(valid => {
+        setErrors({
+          ...errors, [name]: ""
+        });
+      })
+      // if the validation is unsuccessful, we can set the error message to the message
+      // returned from yup (that we created in our schema)
+      .catch(err => {
+        setErrors({
+          ...errors, [name]: err.errors[0]
+        });
+      });
+
+    // Whether or not our validation was successful, we will still set the state to the new value as the user is typing
+    setFormValues({
+      ...formValues, [name]: value
+    });
+  };
+
+      const formSubmit = event => {
+        event.preventDefault();
+        console.log("submitted");
+      }
 
 return (
     <div className="form-container">
@@ -61,8 +93,11 @@ return (
                 Do you agree to the Terms of Service?
                 <input onChange={handleChange} type="checkbox" name="terms" checked={formValues.terms}/>
             </label>
-            <button disabled={disabled}>Add User!</button>
+            <button disabled={disabled} onSubmit={formSubmit}>Add User!</button>
         </form>
+        <div style={{color: "red"}}>
+            <div>{errors.fname}</div><div>{errors.lname}</div><div>{errors.email}</div><div>{errors.terms}</div>
+        </div>
     </div>
 
 )
