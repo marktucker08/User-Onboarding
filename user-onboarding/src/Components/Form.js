@@ -10,6 +10,10 @@ function Form () {
     const [formValues, setFormValues] = useState({
         fname: '', lname: '', email: '', terms: false, 
     })
+    const [errors, setErrors] = useState({
+        fname: '', lname: '', email: '', terms: '', 
+      });
+    const [disabled, setDisabled] = useState(true);
 
     const formSchema = Yup.object().shape({
         fname: Yup
@@ -29,28 +33,35 @@ function Form () {
           .oneOf([true], "You must accept the Terms")
       });
 
-// changeHandler
+      const handleChange = event => {
+        const { name, type, value, checked } = event.target;
+        const updatedInfo = type === 'checkbox' ? checked : value;
+        setFormValues({ ...formValues, [name]: updatedInfo });
+      }
 
-
+      useEffect(() => {
+        formSchema.isValid(formValues).then(valid => {
+          setDisabled(!valid);
+        });
+      }, [formValues]);
 
 return (
-    <div class="form-container">
+    <div className="form-container">
         <form>
             <label>First Name:
-                <input type="text" name="fname" value="" placeholder='First Name'></input>
+                <input onChange={handleChange} type="text" name="fname" value={formValues.fname} placeholder='First Name'/>
             </label>
             <label>Last Name:
-                <input type="text" name="lname" value="" placeholder='Last Name'></input>
+                <input onChange={handleChange} type="text" name="lname" value={formValues.lname} placeholder='Last Name'/>
             </label>
             <label>Email:
-                <input type="text" name="email" value="" placeholder='Email'></input>
+                <input onChange={handleChange} type="text" name="email" value={formValues.email} placeholder='Email'/>
             </label>
             <label>
                 Do you agree to the Terms of Service?
-                <input id="termsInput" type="checkbox" name="terms" />
+                <input onChange={handleChange} type="checkbox" name="terms" checked={formValues.terms}/>
             </label>
-
-            <button>Add User!</button>
+            <button disabled={disabled}>Add User!</button>
         </form>
     </div>
 
