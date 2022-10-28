@@ -74,12 +74,20 @@ function Form () {
 
       const formSubmit = event => {
         event.preventDefault();
-        console.log("submitted");
+        const newUser = { fname: formValues.fname.trim(), lname: formValues.lname.trim(), email: formValues.email.trim(), terms: formValues.terms }
+        axios
+        .post("https://reqres.in/api/users", newUser)
+        .then(result => {
+            console.log(result.data);
+        })
+        .catch(err => {
+            console.log(err);
+        })
       }
 
 return (
     <div className="form-container">
-        <form>
+        <form onSubmit={formSubmit}>
             <label>First Name:
                 <input onChange={handleChange} type="text" name="fname" value={formValues.fname} placeholder='First Name'/>
             </label>
@@ -93,7 +101,7 @@ return (
                 Do you agree to the Terms of Service?
                 <input onChange={handleChange} type="checkbox" name="terms" checked={formValues.terms}/>
             </label>
-            <button disabled={disabled} onSubmit={formSubmit}>Add User!</button>
+            <button disabled={disabled}>Add User!</button>
         </form>
         <div style={{color: "red"}}>
             <div>{errors.fname}</div><div>{errors.lname}</div><div>{errors.email}</div><div>{errors.terms}</div>
