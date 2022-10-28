@@ -15,6 +15,8 @@ function Form () {
       });
     const [disabled, setDisabled] = useState(true);
 
+    const [users, setUsers] = useState([]);
+
     const formSchema = Yup.object().shape({
         fname: Yup
           .string()
@@ -50,23 +52,18 @@ function Form () {
      const setFormErrors = (name, value) => {
       Yup
       .reach(formSchema, name)
-      //we can then run validate using the value
       .validate(value)
-      // if the validation is successful, we can clear the error message
       .then(valid => {
         setErrors({
           ...errors, [name]: ""
         });
       })
-      // if the validation is unsuccessful, we can set the error message to the message
-      // returned from yup (that we created in our schema)
       .catch(err => {
         setErrors({
           ...errors, [name]: err.errors[0]
         });
       });
 
-    // Whether or not our validation was successful, we will still set the state to the new value as the user is typing
     setFormValues({
       ...formValues, [name]: value
     });
@@ -79,10 +76,12 @@ function Form () {
         .post("https://reqres.in/api/users", newUser)
         .then(result => {
             console.log(result.data);
+            setUsers([result.data, ...users ])
         })
         .catch(err => {
             console.log(err);
         })
+        .finally(setFormValues({fname: '', lname: '', email: '', terms: false}))
       }
 
 return (
@@ -105,6 +104,15 @@ return (
         </form>
         <div style={{color: "red"}}>
             <div>{errors.fname}</div><div>{errors.lname}</div><div>{errors.email}</div><div>{errors.terms}</div>
+        </div>
+        <div>
+            {users.map(user => {
+                return (
+                <div key={user.id}>
+                    <p>{user.createdAt}</p> 
+                    <p>{user.fname}</p> <p>{user.lname}</p><p>{user.email}</p> 
+                </div>
+            )})}
         </div>
     </div>
 
