@@ -100,7 +100,7 @@ return (
                 Do you agree to the Terms of Service?
                 <input onChange={handleChange} type="checkbox" name="terms" checked={formValues.terms}/>
             </label>
-            <button disabled={disabled}>Add User!</button>
+            <button disabled={disabled} id="submitBtn">Add User!</button>
         </form>
         <div style={{color: "red"}}>
             <div>{errors.fname}</div><div>{errors.lname}</div><div>{errors.email}</div><div>{errors.terms}</div>
